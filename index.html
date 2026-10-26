@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DuelLab — Yu-Gi-Oh! Master Duel</title>
+<style>
+:root{--bg:#0b1020;--panel:#131b30;--panel2:#19243d;--line:#2b3857;--text:#edf2ff;--muted:#9aa9c8;--gold:#f5c76b;--cyan:#65d7e8;--purple:#a78bfa;--red:#fb7185;--green:#72e0ae}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#182444 0,#0b1020 48%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#243252;color:var(--text);border-radius:10px;padding:10px 14px;font-weight:650}button:hover{filter:brightness(1.15)}button.primary{background:linear-gradient(120deg,#d9a94d,#f5d78b);color:#1b2030;border:0}button.ghost{background:transparent}button.danger{color:#ffc4cd;background:#3b2030;border-color:#754052}
+input,textarea,select{width:100%;background:#0d1528;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--cyan)}textarea{min-height:210px;resize:vertical;line-height:1.5}
+.app{max-width:1440px;margin:auto;padding:24px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:13px}.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#f7d889,#a76c23);color:#151a2b;font-size:23px;font-weight:900;box-shadow:0 8px 28px #d9a94d25}.brand h1{font-size:22px;margin:0;letter-spacing:.4px}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px}.sidebar,.panel,.stat{background:linear-gradient(145deg,#151f36ee,#10182bea);border:1px solid var(--line);border-radius:17px}.sidebar{padding:12px;height:max-content;position:sticky;top:15px}.nav{display:flex;flex-direction:column;gap:5px}.nav button{background:transparent;border:0;text-align:left;color:var(--muted);padding:12px}.nav button.active{background:#263451;color:var(--gold)}.side-note{border-top:1px solid var(--line);margin-top:15px;padding:14px 8px 6px;color:var(--muted);font-size:12px;line-height:1.55}.main{min-width:0}.view{display:none}.view.active{display:block}.heading{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:0 0 18px}.heading h2{margin:0;font-size:25px}.heading p{margin:6px 0 0;color:var(--muted);font-size:13px}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800;margin-bottom:7px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.stat{padding:17px}.stat .label{font-size:12px;color:var(--muted)}.stat .value{font-size:29px;font-weight:800;margin:8px 0 4px}.stat .sub{font-size:11px;color:#8494b7}.stat:nth-child(2) .value{color:var(--gold)}.stat:nth-child(3) .value{color:var(--cyan)}.stat:nth-child(4) .value{color:var(--purple)}
+.content-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.panel{padding:18px;margin-bottom:14px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.panel h3{font-size:15px;margin:0}.muted{color:var(--muted)}.small{font-size:12px}.bar-row{display:grid;grid-template-columns:minmax(90px,1fr) 2fr 32px;gap:10px;align-items:center;margin:13px 0;font-size:12px}.bar-track{height:8px;background:#27324c;border-radius:99px;overflow:hidden}.bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#7a70ee,#63d6e5)}.bar.gold{background:linear-gradient(90deg,#ad762c,#f4d37e)}.empty{padding:25px;border:1px dashed #3b4b6e;border-radius:12px;color:var(--muted);text-align:center;line-height:1.6}.deck-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.deck-card{border:1px solid var(--line);border-radius:14px;background:#141e33;overflow:hidden}.deck-art{height:82px;background:linear-gradient(120deg,#28345a,#192038);display:flex;align-items:center;justify-content:space-between;padding:15px}.deck-symbol{font-size:30px;color:var(--gold)}.deck-type{font-size:10px;color:#d6dff5;border:1px solid #536182;padding:5px 8px;border-radius:20px}.deck-info{padding:14px}.deck-info h4{margin:0 0 6px;font-size:15px}.deck-info p{margin:0 0 12px;color:var(--muted);font-size:12px}.deck-meta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px}.pill{font-size:10px;background:#25324d;color:#b9c7e5;border-radius:20px;padding:5px 8px}.deck-actions{display:flex;gap:7px}.deck-actions button{flex:1;font-size:11px;padding:8px 5px}.toolbar{display:flex;gap:10px;margin-bottom:14px}.toolbar>*{flex:1}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}.field label{font-size:12px;color:#bdc9e4}.help{font-size:11px;color:var(--muted);line-height:1.5}.import-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}.compare-selects{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #27344f;white-space:nowrap}th{color:#9eafd1;font-weight:650}td{color:#e5ebfa}.badge{display:inline-block;border-radius:7px;padding:4px 7px;font-size:10px;background:#273b38;color:var(--green)}.toast{position:fixed;right:22px;bottom:22px;background:#e7f8ef;color:#143525;padding:13px 17px;border-radius:11px;box-shadow:0 10px 35px #0006;z-index:10;display:none;font-weight:700}.footer{color:#7383a5;text-align:center;font-size:11px;padding:16px}.split{display:flex;align-items:center;justify-content:space-between;gap:12px}.tagline{color:var(--cyan)}.card-list{display:flex;flex-direction:column;gap:8px}.card-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border-radius:9px;background:#19243b;font-size:12px}.card-row strong{color:var(--gold)}.catalog-card{border:1px solid var(--line);border-radius:13px;background:#141e33;overflow:hidden;display:flex;flex-direction:column}.catalog-card img{width:100%;aspect-ratio:0.72;object-fit:contain;background:#0a1020;max-height:260px}.catalog-card .deck-info{flex:1;display:flex;flex-direction:column}.catalog-card .deck-actions{margin-top:auto}.ban-forbidden{color:#ff9eae;background:#482334}.ban-limited{color:#ffd486;background:#46351f}.ban-semi{color:#a9b6ff;background:#29365a}.catalog-card .pill{white-space:normal}.builder-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}.builder-sections{display:grid;grid-template-columns:1fr;gap:12px}.builder-section{border:1px solid var(--line);border-radius:13px;padding:13px;background:#10182b}.builder-section h3{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px}.builder-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:9px}.builder-card{position:relative;background:#19243b;border:1px solid #344361;border-radius:9px;padding:7px;text-align:center;min-width:0}.builder-card img{width:100%;aspect-ratio:.72;object-fit:contain;background:#0b1020;border-radius:5px}.builder-card .bname{font-size:10px;line-height:1.25;min-height:26px;margin:5px 0;overflow-wrap:anywhere}.qty-controls{display:flex;justify-content:center;align-items:center;gap:6px}.qty-controls button{padding:3px 7px;border-radius:6px}.qty-controls b{min-width:15px}.builder-summary{position:sticky;top:15px;height:max-content}.legal-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #27344f;font-size:12px}.legal-good{color:var(--green)}.legal-warn{color:#ffd486}.legal-bad{color:#ff9eae}.builder-card .remove-card{position:absolute;top:5px;right:5px;padding:2px 6px;border-radius:5px;background:#3b2030}.empty-mini{font-size:12px;color:var(--muted);padding:14px;text-align:center}@media(max-width:900px){.builder-layout{grid-template-columns:1fr}.builder-summary{position:static}}
+.warning{border-left:3px solid var(--gold);padding:10px 12px;background:#302a21;border-radius:0 8px 8px 0;color:#e8d6ac;font-size:12px;line-height:1.5;margin-top:12px}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,1fr)}.deck-grid{grid-template-columns:repeat(2,1fr)}.content-grid{grid-template-columns:1fr}}
+@media(max-width:740px){.app{padding:13px}.top{align-items:flex-start;flex-direction:column}.layout{grid-template-columns:1fr}.sidebar{position:static}.nav{display:grid;grid-template-columns:repeat(3,1fr)}.nav button{text-align:center;padding:10px 5px;font-size:12px}.side-note{display:none}.deck-grid,.import-layout,.form-grid,.compare-selects{grid-template-columns:1fr}.heading{align-items:flex-start;flex-direction:column}.stats{gap:8px}.stat{padding:13px}.stat .value{font-size:24px}.toolbar{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="logo">遊</div><div><h1>DUELLAB <span class="tagline">/ MASTER DUEL</span></h1><p>Biblioteca, análise e comparação de decks</p></div></div>
+    <div class="top-actions"><button class="ghost" id="exportBtn">Exportar backup</button><button class="primary" id="newDeckBtn">＋ Importar deck</button></div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="nav">
+        <button class="active" data-view="dashboard">◈ Visão geral</button>
+        <button data-view="library">▦ Biblioteca</button>
+        <button data-view="import">＋ Importar deck</button>
+        <button data-view="compare">⇄ Comparar decks</button>
+        <button data-view="catalog">✦ Catálogo de cartas</button>
+        <button data-view="builder">⚒ Montar deck</button>
+        <button data-view="cards">✧ Cartas frequentes</button>
+        <button data-view="settings">⚙ Dados e backup</button>
+      </nav>
+      <div class="side-note"><b>Seu laboratório de decks</b><br>As listas ficam salvas neste navegador. Exporte backups para não perder seus dados.</div>
+    </aside>
+    <main class="main">
+      <section class="view active" id="view-dashboard">
+        <div class="heading"><div><div class="eyebrow">Painel de controle</div><h2>Visão geral</h2><p>Uma visão rápida da sua coleção de decks.</p></div><span class="pill">MASTER DUEL · LOCAL</span></div>
+        <div class="stats">
+          <div class="stat"><div class="label">Decks cadastrados</div><div class="value" id="statDecks">0</div><div class="sub">Na sua biblioteca</div></div>
+          <div class="stat"><div class="label">Cartas nas listas</div><div class="value" id="statCards">0</div><div class="sub">Contando cópias</div></div>
+          <div class="stat"><div class="label">Cartas únicas</div><div class="value" id="statUnique">0</div><div class="sub">Nomes distintos</div></div>
+          <div class="stat"><div class="label">Arquétipos</div><div class="value" id="statArchetypes">0</div><div class="sub">Identificados/cadastrados</div></div>
+        </div>
+        <div class="content-grid">
+          <div class="panel"><div class="panel-head"><h3>Cartas mais utilizadas</h3><span class="small muted">Todas as listas</span></div><div id="popularChart"></div></div>
+          <div class="panel"><div class="panel-head"><h3>Distribuição por seção</h3></div><div id="sectionChart"></div><p class="help">As quantidades são calculadas a partir das listas importadas.</p></div>
+        </div>
+        <div class="panel"><div class="panel-head"><h3>Decks adicionados recentemente</h3><button class="ghost" data-goto="library">Ver biblioteca →</button></div><div id="recentDecks"></div></div>
+      </section>
+      <section class="view" id="view-library">
+        <div class="heading"><div><div class="eyebrow">Coleção pessoal</div><h2>Biblioteca de decks</h2><p>Pesquise, revise e compare as listas que você cadastrou.</p></div><button class="primary" data-goto="import">＋ Novo deck</button></div>
+        <div class="toolbar"><input id="searchDecks" placeholder="Buscar por nome, arquétipo ou carta…"><select id="sortDecks"><option value="recent">Mais recentes</option><option value="name">Nome (A–Z)</option><option value="size">Maior Main Deck</option></select></div>
+        <div id="deckGrid" class="deck-grid"></div>
+      </section>
+      <section class="view" id="view-import">
+        <div class="heading"><div><div class="eyebrow">Adicionar à coleção</div><h2>Importar deck</h2><p>Cole uma lista de texto; o sistema separa Main, Extra e Side Deck.</p></div></div>
+        <div class="import-layout">
+          <div class="panel">
+            <div class="field"><label for="deckName">Nome do deck *</label><input id="deckName" placeholder="Ex.: Branded Despia"></div>
+            <div class="form-grid">
+              <div class="field"><label for="archetype">Arquétipo / tema</label><input id="archetype" placeholder="Ex.: Branded"></div>
+              <div class="field"><label for="format">Formato / observação</label><input id="format" placeholder="Ex.: Master Duel — atual"></div>
+            </div>
+            <div class="field"><label for="deckText">Lista de cartas *</label><textarea id="deckText" placeholder="Exemplo:
+Main Deck:
+3 Maxx “C”
+3 Ash Blossom & Joyous Spring
+2 Aluber the Jester of Despia
+
+Extra Deck:
+2 Mirrorjade the Iceblade Dragon
+
+Side Deck:
+(cole suas cartas aqui)"></textarea><div class="help">Formatos aceitos: “3 Nome da Carta”, “Nome da Carta x3” ou uma carta por linha. Cabeçalhos opcionais: Main Deck, Extra Deck e Side Deck.</div></div>
+            <div class="field"><label for="deckNotes">Notas (opcional)</label><textarea id="deckNotes" style="min-height:75px" placeholder="Estratégia, combos, pontos fracos, versão da lista…"></textarea></div>
+            <button class="primary" id="saveDeckBtn">Salvar deck na biblioteca</button>
+          </div>
+          <div class="panel"><div class="panel-head"><h3>Prévia da importação</h3><span class="pill">Ao vivo</span></div><div id="importPreview" class="empty">Cole uma lista à esquerda para visualizar a leitura das cartas.</div><div class="warning">A importação é baseada em texto e tenta reconhecer nomes e quantidades. Confira a prévia antes de salvar; a versão inicial não consulta automaticamente a API de cartas nem valida banlists.</div></div>
+        </div>
+      </section>
+      <section class="view" id="view-compare">
+        <div class="heading"><div><div class="eyebrow">Análise lado a lado</div><h2>Comparar decks</h2><p>Compare tamanho, cartas compartilhadas e diferenças entre duas listas.</p></div></div>
+        <div class="panel"><div class="compare-selects"><div class="field"><label for="compareA">Deck A</label><select id="compareA"></select></div><div class="field"><label for="compareB">Deck B</label><select id="compareB"></select></div></div><button class="primary" id="compareBtn">Comparar agora</button></div>
+        <div id="compareResults"></div>
+      </section>
+
+      <section class="view" id="view-catalog">
+        <div class="heading"><div><div class="eyebrow">Base de cartas</div><h2>Catálogo TCG / OCG</h2><p>Pesquise cartas, consulte status de banlist e adicione cópias aos seus decks.</p></div><button class="primary" id="loadCatalogBtn">Carregar catálogo</button></div>
+        <div class="panel">
+          <div class="toolbar"><input id="catalogSearch" placeholder="Buscar por nome da carta…"><select id="catalogFormat"><option value="tcg">TCG</option><option value="ocg">OCG</option><option value="master">Master Duel</option><option value="all">Todas as cartas (base geral)</option></select><select id="catalogBan"><option value="all">Todos os status</option><option value="Forbidden">Proibidas</option><option value="Limited">Limitadas</option><option value="Semi-Limited">Semi-limitadas</option><option value="Unlimited">Sem restrição na lista</option></select></div>
+          <div class="form-grid">
+            <div class="field"><label for="targetDeck">Adicionar ao deck</label><select id="targetDeck"></select></div>
+            <div class="field"><label for="targetSection">Seção</label><select id="targetSection"><option value="auto">Automático (Main/Extra)</option><option>Main Deck</option><option>Extra Deck</option><option>Side Deck</option></select></div>
+          </div>
+          <div class="help" id="catalogStatus">O catálogo usa a API pública YGOPRODeck. Escolha o formato para carregar cartas e consultar restrições disponíveis; é necessária conexão com a internet.</div>
+        </div>
+        <div id="catalogResults" class="deck-grid"><div class="empty" style="grid-column:1/-1">Clique em “Carregar catálogo” para buscar as cartas.</div></div>
+        <div class="warning">Os dados e imagens são fornecidos por uma API de terceiros e podem não refletir imediatamente cada atualização oficial. Para torneios, confirme a lista oficial vigente. A validação automática é auxiliar e depende dos dados externos disponíveis para cada formato.</div>
+      </section>
+      <section class="view" id="view-builder">
+        <div class="heading"><div><div class="eyebrow">Construtor visual</div><h2>Montar e revisar deck</h2><p>Edite cópias visualmente, organize Main/Extra/Side e confira restrições por formato.</p></div></div>
+        <div class="panel"><div class="form-grid"><div class="field"><label for="builderDeck">Deck para editar</label><select id="builderDeck"></select></div><div class="field"><label for="builderFormat">Formato da banlist</label><select id="builderFormat"><option value="master">Master Duel</option><option value="tcg">TCG</option><option value="ocg">OCG</option></select></div></div><div class="toolbar"><input id="builderSearch" placeholder="Filtrar cartas deste deck…"><button id="builderRefresh">Atualizar validação</button></div><div id="builderNotice" class="help">Selecione um deck. Para imagens e validação de cartas, carregue o catálogo de cartas primeiro.</div></div>
+        <div class="builder-layout"><div class="builder-sections" id="builderSections"><div class="empty">Crie ou importe um deck para começar.</div></div><aside class="panel builder-summary"><div class="panel-head"><h3>Validação do deck</h3><span class="pill" id="builderFormatBadge">Master Duel</span></div><div id="builderValidation"></div><div class="warning">As regras são uma checagem auxiliar. Confirme a lista oficial vigente antes de jogar ranqueadas ou torneios. A lista de Master Duel é diferente de TCG/OCG.</div></aside></div>
+      </section>
+      <section class="view" id="view-cards">
+        <div class="heading"><div><div class="eyebrow">Meta pessoal</div><h2>Cartas frequentes</h2><p>Veja quais cartas aparecem com mais frequência nos decks cadastrados.</p></div></div>
+        <div class="panel"><div class="toolbar"><input id="searchCards" placeholder="Buscar carta…"><select id="filterSection"><option value="all">Todas as seções</option><option value="Main Deck">Main Deck</option><option value="Extra Deck">Extra Deck</option><option value="Side Deck">Side Deck</option></select></div><div id="cardsTable"></div></div>
+      </section>
+      <section class="view" id="view-settings">
+        <div class="heading"><div><div class="eyebrow">Portabilidade</div><h2>Dados e backup</h2><p>Faça uma cópia da sua biblioteca ou restaure um backup JSON.</p></div></div>
+        <div class="content-grid">
+          <div class="panel"><h3>Exportar biblioteca</h3><p class="muted small">Baixe todos os decks e metadados em um arquivo JSON.</p><button class="primary" id="exportBtn2">Baixar backup JSON</button></div>
+          <div class="panel"><h3>Importar backup</h3><p class="muted small">Restaure um backup criado pelo DuelLab. Os decks importados serão adicionados à biblioteca atual.</p><input type="file" id="backupFile" accept=".json,application/json" style="margin:10px 0"><button id="restoreBtn">Restaurar backup</button></div>
+        </div>
+        <div class="panel"><h3>Onde os dados ficam?</h3><p class="muted small">Nesta primeira versão, os dados ficam no armazenamento local deste navegador (localStorage). Isso permite usar o site sem servidor, mas os dados não sincronizam entre dispositivos ou navegadores. Use o backup regularmente.</p><div class="warning">Para publicar uma biblioteca comunitária acessível por várias pessoas, a próxima etapa será conectar um banco de dados online (por exemplo, Supabase), autenticação e regras de moderação. Não há dados enviados para um servidor nesta versão.</div><button class="danger" id="clearBtn" style="margin-top:15px">Apagar todos os decks deste navegador</button></div>
+      </section>
+      <div class="footer">DuelLab · Projeto independente para organizar decks de Yu-Gi-Oh! Master Duel. Não afiliado à Konami.</div>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const STORE='duellab_masterduel_decks_v1';
+let decks=loadDecks();
+let lastCompare=null;
+function loadDecks(){try{return JSON.parse(localStorage.getItem(STORE)||'[]')}catch(e){return []}}
+function persist(){localStorage.setItem(STORE,JSON.stringify(decks));renderAll()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>t.style.display='none',2600)}
+function go(view){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+view));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='compare')renderCompareSelects();if(view==='cards')renderCardsTable();if(view==='builder'){renderBuilder();if(document.getElementById('builderFormat').value==='master')loadMasterBanlist()}window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{go(b.dataset.view);if(b.dataset.view==='catalog')renderTargetDecks()}));
+document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.goto)));
+document.getElementById('newDeckBtn').onclick=()=>go('import');
+function parseList(text){
+ const sections={'Main Deck':[],'Extra Deck':[],'Side Deck':[]};let section='Main Deck';
+ const headers=[['extra deck','Extra Deck'],['side deck','Side Deck'],['main deck','Main Deck']];
+ text.split(/\r?\n/).forEach(raw=>{
+  let line=raw.trim();if(!line||line.startsWith('#')||line.startsWith('//'))return;
+  const clean=line.replace(/^[\s\-*•]+/,'').trim();
+  const low=clean.toLowerCase().replace(/[:\s]+$/,'');
+  let found=headers.find(([h])=>low===h||low===h.replace(' ',''));
+  if(found){section=found[1];return}
+  if(/^(deck|main|extra|side)( deck)?\s*:?$/i.test(clean))return;
+  if(/^(monsters?|spells?|traps?)\s*:?\s*$/i.test(clean))return;
+  let qty=1,name=clean;
+  let m=clean.match(/^(\d{1,2})\s*[x×]?\s+(.+)$/);
+  if(m){qty=Math.max(1,Math.min(99,parseInt(m[1],10)));name=m[2].trim()}
+  else {m=clean.match(/^(.+?)\s*[x×]\s*(\d{1,2})$/i);if(m){name=m[1].trim();qty=Math.max(1,Math.min(99,parseInt(m[2],10)))}}
+  name=name.replace(/\s+\(\d+\)\s*$/,'').trim();
+  if(name && !/^(total|cards?)\b/i.test(name))sections[section].push({name,qty});
+ });
+ for(const key of Object.keys(sections)){
+  const merged=new Map();sections[key].forEach(c=>{const k=c.name.toLowerCase();if(merged.has(k))merged.get(k).qty+=c.qty;else merged.set(k,{...c})});sections[key]=[...merged.values()]
+ }
+ return sections;
+}
+function total(section){return section.reduce((s,c)=>s+c.qty,0)}
+function deckTotals(d){return {'Main Deck':total(d.sections['Main Deck']||[]),'Extra Deck':total(d.sections['Extra Deck']||[]),'Side Deck':total(d.sections['Side Deck']||[])}}
+function allCards(d){return Object.entries(d.sections).flatMap(([section,cards])=>cards.map(c=>({...c,section})))}
+function countByCard(sectionFilter='all'){const map=new Map();decks.forEach(d=>allCards(d).forEach(c=>{if(sectionFilter!=='all'&&c.section!==sectionFilter)return;const key=c.name.toLowerCase();if(!map.has(key))map.set(key,{name:c.name,total:0,decks:0,sections:{}});const row=map.get(key);row.total+=c.qty;row.sections[c.section]=(row.sections[c.section]||0)+c.qty;if(!row._deckIds)row._deckIds=new Set();if(!row._deckIds.has(d.id)){row.decks++;row._deckIds.add(d.id)}}));return [...map.values()].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name))}
+function uniqueCount(){return new Set(decks.flatMap(d=>allCards(d).map(c=>c.name.toLowerCase()))).size}
+function renderDashboard(){
+ const all=decks.flatMap(allCards),unique=new Set(all.map(c=>c.name.toLowerCase()));
+ document.getElementById('statDecks').textContent=decks.length;
+ document.getElementById('statCards').textContent=all.reduce((s,c)=>s+c.qty,0);
+ document.getElementById('statUnique').textContent=unique.size;
+ document.getElementById('statArchetypes').textContent=new Set(decks.map(d=>(d.archetype||'Não informado').trim().toLowerCase())).size;
+ const popular=countByCard().slice(0,7),max=popular[0]?.total||1;
+ document.getElementById('popularChart').innerHTML=popular.length?popular.map((c,i)=>`<div class="bar-row"><span title="${esc(c.name)}">${esc(c.name.length>23?c.name.slice(0,21)+'…':c.name)}</span><div class="bar-track"><div class="bar ${i===0?'gold':''}" style="width:${c.total/max*100}%"></div></div><b>${c.total}</b></div>`).join(''):'<div class="empty">Importe seu primeiro deck para ver as estatísticas.</div>';
+ const secs=['Main Deck','Extra Deck','Side Deck'],sum=Object.fromEntries(secs.map(s=>[s,all.filter(c=>c.section===s).reduce((a,c)=>a+c.qty,0)])),maxS=Math.max(1,...Object.values(sum));
+ document.getElementById('sectionChart').innerHTML=secs.map((s,i)=>`<div class="bar-row"><span>${s}</span><div class="bar-track"><div class="bar ${i===0?'gold':''}" style="width:${sum[s]/maxS*100}%"></div></div><b>${sum[s]}</b></div>`).join('')+`<p class="small muted">Total de ${Object.values(sum).reduce((a,b)=>a+b,0)} cartas em todas as listas.</p>`;
+ const recent=[...decks].sort((a,b)=>b.createdAt-a.createdAt).slice(0,3);
+ document.getElementById('recentDecks').innerHTML=recent.length?`<div class="deck-grid">${recent.map(deckCard).join('')}</div>`:'<div class="empty">Sua biblioteca está vazia. Clique em “Importar deck” para começar.</div>';
+}
+function deckCard(d){const t=deckTotals(d);return `<article class="deck-card"><div class="deck-art"><span class="deck-symbol">✧</span><span class="deck-type">${esc(d.archetype||'Deck pessoal')}</span></div><div class="deck-info"><h4>${esc(d.name)}</h4><p>${esc(d.format||'Yu-Gi-Oh! Master Duel')}</p><div class="deck-meta"><span class="pill">Main ${t['Main Deck']}</span><span class="pill">Extra ${t['Extra Deck']}</span><span class="pill">Side ${t['Side Deck']}</span></div><div class="deck-actions"><button data-action="inspect" data-id="${d.id}">Detalhes</button><button data-action="compare" data-id="${d.id}">Comparar</button><button class="danger" data-action="delete" data-id="${d.id}">Excluir</button></div></div></article>`}
+function renderLibrary(){let q=(document.getElementById('searchDecks').value||'').toLowerCase(),sort=document.getElementById('sortDecks').value;let list=decks.filter(d=>[d.name,d.archetype,d.format,...allCards(d).map(c=>c.name)].join(' ').toLowerCase().includes(q));if(sort==='name')list.sort((a,b)=>a.name.localeCompare(b.name));else if(sort==='size')list.sort((a,b)=>deckTotals(b)['Main Deck']-deckTotals(a)['Main Deck']);else list.sort((a,b)=>b.createdAt-a.createdAt);document.getElementById('deckGrid').innerHTML=list.length?list.map(deckCard).join(''):'<div class="empty" style="grid-column:1/-1">Nenhum deck encontrado. Importe uma lista ou ajuste a pesquisa.</div>'}
+function renderCardsTable(){const q=(document.getElementById('searchCards').value||'').toLowerCase(),f=document.getElementById('filterSection').value;let rows=countByCard(f).filter(c=>c.name.toLowerCase().includes(q));document.getElementById('cardsTable').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Nome da carta</th><th>Cópias totais</th><th>Decks com a carta</th><th>Seções</th></tr></thead><tbody>${rows.map(c=>`<tr><td>${esc(c.name)}</td><td><b>${c.total}</b></td><td>${c.decks}</td><td>${Object.entries(c.sections).map(([s,n])=>`${esc(s.replace(' Deck',''))}: ${n}`).join(' · ')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nenhuma carta encontrada. Importe um deck para começar.</div>'}
+function renderCompareSelects(){const a=document.getElementById('compareA'),b=document.getElementById('compareB'),oldA=a.value,oldB=b.value;const opts=decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');a.innerHTML=opts;b.innerHTML=opts;if(decks.some(d=>d.id===oldA))a.value=oldA;if(decks.some(d=>d.id===oldB))b.value=oldB;if(decks.length>1&&a.value===b.value)b.selectedIndex=1;if(!decks.length)document.getElementById('compareResults').innerHTML='<div class="empty">Cadastre pelo menos dois decks para comparar as listas.</div>'}
+function compareDecks(){const a=decks.find(d=>d.id===document.getElementById('compareA').value),b=decks.find(d=>d.id===document.getElementById('compareB').value),out=document.getElementById('compareResults');if(!a||!b){out.innerHTML='<div class="empty">Cadastre pelo menos dois decks para comparar as listas.</div>';return}if(a.id===b.id){out.innerHTML='<div class="empty">Escolha dois decks diferentes.</div>';return}
+ const map=d=>{const m=new Map();allCards(d).forEach(c=>{const k=c.name.toLowerCase();m.set(k,{name:c.name,qty:(m.get(k)?.qty||0)+c.qty})});return m},ma=map(a),mb=map(b),keys=new Set([...ma.keys(),...mb.keys()]);let shared=[],onlyA=[],onlyB=[],different=[];keys.forEach(k=>{const x=ma.get(k),y=mb.get(k);if(x&&y){shared.push({name:x.name,a:x.qty,b:y.qty});if(x.qty!==y.qty)different.push({name:x.name,a:x.qty,b:y.qty})}else if(x)onlyA.push(x);else onlyB.push(y)});shared.sort((x,y)=>x.name.localeCompare(y.name));onlyA.sort((x,y)=>x.name.localeCompare(y.name));onlyB.sort((x,y)=>x.name.localeCompare(y.name));const ta=deckTotals(a),tb=deckTotals(b);
+ const list=(arr,empty)=>arr.length?`<div class="card-list">${arr.map(c=>`<div class="card-row"><span>${esc(c.name)}</span><strong>${c.a!==undefined?`${c.a} × ${c.b}`:`× ${c.qty}`}</strong></div>`).join('')}</div>`:`<p class="muted small">${empty}</p>`;
+ out.innerHTML=`<div class="stats"><div class="stat"><div class="label">${esc(a.name)} · Main</div><div class="value">${ta['Main Deck']}</div><div class="sub">cartas</div></div><div class="stat"><div class="label">${esc(b.name)} · Main</div><div class="value">${tb['Main Deck']}</div><div class="sub">cartas</div></div><div class="stat"><div class="label">Nomes compartilhados</div><div class="value">${shared.length}</div><div class="sub">cartas presentes nos dois</div></div><div class="stat"><div class="label">Diferenças de quantidade</div><div class="value">${different.length}</div><div class="sub">nomes com cópias diferentes</div></div></div>
+ <div class="content-grid"><div class="panel"><div class="panel-head"><h3>Cartas compartilhadas (${shared.length})</h3></div>${list(shared,'Nenhuma carta compartilhada.')}</div><div class="panel"><div class="panel-head"><h3>Quantidade diferente</h3></div>${list(different,'Nenhuma diferença de quantidade nas cartas compartilhadas.')}</div><div class="panel"><div class="panel-head"><h3>Exclusivas de ${esc(a.name)}</h3></div>${list(onlyA,'Nenhuma carta exclusiva.')}</div><div class="panel"><div class="panel-head"><h3>Exclusivas de ${esc(b.name)}</h3></div>${list(onlyB,'Nenhuma carta exclusiva.')}</div></div>`;
+}
+
+let catalogCards=[];
+let catalogLoadedFormat='';
+let catalogLoading=false;
+function renderTargetDecks(){
+ const s=document.getElementById('targetDeck'),old=s.value;
+ s.innerHTML=decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
+ if(decks.some(d=>d.id===old))s.value=old;
+ if(!decks.length)s.innerHTML='<option value="">Crie/import um deck primeiro</option>';
+}
+let masterBanMap={};
+function cardBanStatus(card,format){
+ if(format==='master')return masterBanMap[String(card?.name||'').toLowerCase()]||'Unknown';
+ const key=format==='ocg'?'ban_ocg':'ban_tcg';
+ const val=card?.banlist_info?.[key];
+ if(!val)return 'Unlimited';
+ const v=String(val).toLowerCase();
+ if(v==='forbidden')return 'Forbidden';
+ if(v==='limited')return 'Limited';
+ if(v==='semi-limited'||v==='semi limited')return 'Semi-Limited';
+ return 'Unlimited';
+}
+function renderCatalog(){
+ const q=(document.getElementById('catalogSearch').value||'').trim().toLowerCase();
+ const format=document.getElementById('catalogFormat').value;
+ const ban=document.getElementById('catalogBan').value;
+ let list=catalogCards.filter(c=>String(c.name||'').toLowerCase().includes(q));
+ if(ban!=='all')list=list.filter(c=>cardBanStatus(c,format)===ban);
+ list=list.slice(0,120);
+ const el=document.getElementById('catalogResults');
+ if(!catalogCards.length){el.innerHTML='<div class="empty" style="grid-column:1/-1">Nenhuma carta carregada ainda.</div>';return}
+ el.innerHTML=list.length?list.map(c=>{
+  const status=cardBanStatus(c,format),statusClass=status==='Forbidden'?'ban-forbidden':status==='Limited'?'ban-limited':status==='Semi-Limited'?'ban-semi':'';
+  const img=c.card_images?.[0]?.image_url_small||c.card_images?.[0]?.image_url||'';
+  const type=c.type||'Carta';
+  const stats=c.type?.toLowerCase().includes('monster')?`ATK ${c.atk??'—'} / DEF ${c.def??'—'}`:type;
+  return `<article class="catalog-card"><img loading="lazy" src="${esc(img)}" alt="${esc(c.name)}" onerror="this.style.display='none'"><div class="deck-info"><h4>${esc(c.name)}</h4><p>${esc(stats)}</p><div class="deck-meta"><span class="pill">${esc(type)}</span><span class="pill ${statusClass}">${esc(status==='Semi-Limited'?'Semi-limitada':status==='Limited'?'Limitada':status==='Forbidden'?'Proibida':status==='Unknown'?'Status não confirmado':'Sem restrição na lista')}</span></div><div class="deck-actions"><button class="primary" data-add-card="${esc(c.id)}">＋ Adicionar</button></div></div></article>`;
+ }).join(''):'<div class="empty" style="grid-column:1/-1">Nenhuma carta corresponde aos filtros.</div>';
+ const totalFound=catalogCards.filter(c=>String(c.name||'').toLowerCase().includes(q)).filter(c=>ban==='all'||cardBanStatus(c,format)===ban).length;
+ document.getElementById('catalogStatus').textContent=`${catalogCards.length.toLocaleString('pt-BR')} cartas carregadas · mostrando até 120 de ${totalFound.toLocaleString('pt-BR')} resultados. Clique em Adicionar para incluir a carta na seção escolhida.`;
+}
+async function loadCatalog(){
+ if(catalogLoading)return;
+ const format=document.getElementById('catalogFormat').value;
+ if(catalogCards.length&&catalogLoadedFormat===format){renderCatalog();return}
+ catalogLoading=true;
+ const btn=document.getElementById('loadCatalogBtn');btn.disabled=true;btn.textContent='Carregando…';
+ document.getElementById('catalogStatus').textContent='Consultando a base de cartas… isso pode levar alguns segundos.';
+ try{
+  const apiFormat=format==='master'?'Master%20Duel':format;const url=format==='all'?'https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes':`https://db.ygoprodeck.com/api/v7/cardinfo.php?format=${apiFormat}&misc=yes`;
+  const response=await fetch(url);
+  if(!response.ok)throw new Error('API indisponível (HTTP '+response.status+')');
+  const data=await response.json();
+  if(!Array.isArray(data.data))throw new Error(data.error||'Resposta da API inválida');
+  catalogCards=data.data;catalogLoadedFormat=format;masterBanLoaded=false;renderCatalog();if(format==='master'){await loadMasterBanlist();}
+ }catch(err){
+  document.getElementById('catalogStatus').textContent='Não foi possível carregar o catálogo: '+err.message+'. Verifique sua conexão e tente novamente.';
+  document.getElementById('catalogResults').innerHTML='<div class="empty" style="grid-column:1/-1">Falha ao carregar as cartas. O catálogo depende de uma API externa e de conexão com a internet.</div>';
+ }finally{catalogLoading=false;btn.disabled=false;btn.textContent='Carregar catálogo'}
+}
+document.getElementById('loadCatalogBtn').addEventListener('click',loadCatalog);
+document.getElementById('catalogSearch').addEventListener('input',renderCatalog);
+document.getElementById('catalogBan').addEventListener('change',renderCatalog);
+document.getElementById('catalogFormat').addEventListener('change',()=>{catalogCards=[];catalogLoadedFormat='';document.getElementById('catalogResults').innerHTML='<div class="empty" style="grid-column:1/-1">Clique em “Carregar catálogo” para buscar esta base.</div>';document.getElementById('catalogStatus').textContent='A base selecionada ainda não foi carregada.'});
+document.getElementById('catalogResults').addEventListener('click',e=>{
+ const btn=e.target.closest('[data-add-card]');if(!btn)return;
+ const card=catalogCards.find(c=>String(c.id)===String(btn.dataset.addCard));if(!card)return;
+ const deck=decks.find(d=>d.id===document.getElementById('targetDeck').value);
+ if(!deck){toast('Crie ou importe um deck primeiro.');go('import');return}
+ let section=document.getElementById('targetSection').value;
+ if(section==='auto')section=/Fusion|Synchro|Xyz|XYZ|Link Monster/i.test(card.type||'')?'Extra Deck':'Main Deck';
+ if(!deck.sections[section])deck.sections[section]=[];
+ const existing=deck.sections[section].find(c=>c.name.toLowerCase()===card.name.toLowerCase());
+ if(existing)existing.qty+=1;else deck.sections[section].push({name:card.name,qty:1});
+ persist();renderTargetDecks();renderCatalog();toast(`${card.name} adicionada a ${deck.name}.`);
+});
+
+let masterBanLoaded=false;
+async function loadMasterBanlist(){
+ if(masterBanLoaded)return;
+ try{
+  const r=await fetch('https://api.ygoprodeck.com/banlist/?list=Master+Duel');if(!r.ok)throw new Error('HTTP '+r.status);
+  const html=await r.text();const doc=new DOMParser().parseFromString(html,'text/html');
+  const text=(doc.body?.innerText||doc.body?.textContent||'').replace(/\s+/g,' ');
+  const statuses=['Forbidden','Limited','Semi-Limited'];
+  // Match each catalog card against the banlist page's visible text; only exact names followed by a status are accepted.
+  const sourceCards=[...catalogCards];
+  sourceCards.forEach(c=>{const name=String(c.name||'');const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');const re=new RegExp(escaped+'\\s*(Forbidden|Limited|Semi-Limited)','i');const m=text.match(re);if(m){const raw=m[1].toLowerCase();masterBanMap[name.toLowerCase()]=raw==='semi-limited'?'Semi-Limited':raw[0].toUpperCase()+raw.slice(1);}});
+  masterBanLoaded=true;
+ }catch(e){masterBanMap={};document.getElementById('builderNotice').textContent='A base da banlist de Master Duel não respondeu. A montagem visual funciona, mas a validação de restrições de Master Duel ficará indisponível até a conexão funcionar.';}
+}
+function renderBuilderDecks(){const s=document.getElementById('builderDeck'),old=s.value;s.innerHTML=decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');if(decks.some(d=>d.id===old))s.value=old;if(!decks.length)s.innerHTML='<option value="">Crie ou importe um deck primeiro</option>';}
+function getCardData(name){return catalogCards.find(c=>String(c.name||'').toLowerCase()===String(name).toLowerCase())||null;}
+function builderStatusForName(name,format){const c=getCardData(name);if(!c)return 'Unknown';return cardBanStatus(c,format);}
+function validateBuilder(d,format){
+ const sections=d?.sections||{'Main Deck':[],'Extra Deck':[],'Side Deck':[]};const all=Object.entries(sections).flatMap(([s,arr])=>arr.map(c=>({...c,section:s})));const totals=deckTotals(d);const issues=[];
+ const main=totals['Main Deck']||0,extra=totals['Extra Deck']||0,side=totals['Side Deck']||0;
+ if(main<40||main>60)issues.push({kind:'warn',text:`Main Deck: ${main}/40–60 cartas`});else issues.push({kind:'good',text:`Main Deck: ${main}/40–60 cartas`});
+ if(extra>15)issues.push({kind:'bad',text:`Extra Deck: ${extra}/15 (acima do limite)`});else issues.push({kind:'good',text:`Extra Deck: ${extra}/15 cartas`});
+ if(side>15)issues.push({kind:'bad',text:`Side Deck: ${side}/15 (acima do limite)`});else issues.push({kind:'good',text:`Side Deck: ${side}/15 cartas`});
+ const sums=new Map();all.forEach(c=>sums.set(c.name.toLowerCase(),(sums.get(c.name.toLowerCase())||0)+c.qty));
+ sums.forEach((qty,key)=>{const name=all.find(c=>c.name.toLowerCase()===key)?.name||key,status=builderStatusForName(name,format);const max=status==='Forbidden'?0:status==='Limited'?1:status==='Semi-Limited'?2:3;if(status==='Unknown'){if(format==='master')issues.push({kind:'warn',text:`${name}: status MD não confirmado`});return}if(qty>max)issues.push({kind:'bad',text:`${name}: ${qty} cópias; máximo ${max} (${status==='Forbidden'?'proibida':status==='Limited'?'limitada':status==='Semi-Limited'?'semi-limitada':'regra geral'})`});});
+ return issues;
+}
+function renderBuilder(){
+ renderBuilderDecks();const d=decks.find(x=>x.id===document.getElementById('builderDeck').value);const format=document.getElementById('builderFormat').value;document.getElementById('builderFormatBadge').textContent=format==='master'?'Master Duel':format.toUpperCase();
+ const host=document.getElementById('builderSections');if(!d){host.innerHTML='<div class="empty">Crie ou importe um deck para começar.</div>';document.getElementById('builderValidation').innerHTML='<p class="muted small">Nenhum deck selecionado.</p>';return;}
+ const q=(document.getElementById('builderSearch').value||'').trim().toLowerCase();const secs=['Main Deck','Extra Deck','Side Deck'];host.innerHTML=secs.map(sec=>{const cards=(d.sections[sec]||[]).filter(c=>c.name.toLowerCase().includes(q));return `<div class="builder-section"><h3><span>${sec}</span><span class="pill">${total(d.sections[sec]||[])} cartas</span></h3>${cards.length?`<div class="builder-cards">${cards.map(c=>{const data=getCardData(c.name),img=data?.card_images?.[0]?.image_url_small||data?.card_images?.[0]?.image_url||'';return `<article class="builder-card">${img?`<img loading="lazy" src="${esc(img)}" alt="${esc(c.name)}" onerror="this.style.display='none'">`:'<div style="aspect-ratio:.72;display:grid;place-items:center;color:#7383a5">Sem imagem</div>'}<div class="bname" title="${esc(c.name)}">${esc(c.name)}</div><div class="qty-controls"><button data-builder-minus="${esc(sec)}|${esc(c.name)}" aria-label="Diminuir">−</button><b>${c.qty}</b><button data-builder-plus="${esc(sec)}|${esc(c.name)}" aria-label="Aumentar">＋</button></div><button class="remove-card" data-builder-remove="${esc(sec)}|${esc(c.name)}" title="Remover carta">×</button></article>`}).join('')}</div>`:'<div class="empty-mini">Nenhuma carta nesta seção com esse filtro.</div>'}</div>`}).join('');
+ const issues=validateBuilder(d,format);document.getElementById('builderValidation').innerHTML=issues.length?issues.map(i=>`<div class="legal-row ${i.kind==='bad'?'legal-bad':i.kind==='good'?'legal-good':'legal-warn'}"><span>${i.kind==='bad'?'✕':i.kind==='good'?'✓':'!'} ${esc(i.text)}</span></div>`).join(''):'<p class="muted small">Nenhuma verificação disponível.</p>';
+ document.getElementById('builderNotice').textContent=catalogCards.length?`Catálogo carregado (${catalogCards.length.toLocaleString('pt-BR')} cartas). Imagens disponíveis para cartas encontradas na base.`:'Carregue o catálogo de cartas para mostrar imagens e melhorar a checagem de banlist. A edição de quantidades funciona mesmo sem o catálogo.';
+}
+document.getElementById('builderDeck').addEventListener('change',renderBuilder);document.getElementById('builderFormat').addEventListener('change',async()=>{if(document.getElementById('builderFormat').value==='master'){await loadMasterBanlist()}renderBuilder()});document.getElementById('builderSearch').addEventListener('input',renderBuilder);document.getElementById('builderRefresh').addEventListener('click',async()=>{if(document.getElementById('builderFormat').value==='master')await loadMasterBanlist();renderBuilder();toast('Validação atualizada.');});
+document.getElementById('builderSections').addEventListener('click',e=>{const b=e.target.closest('[data-builder-plus],[data-builder-minus],[data-builder-remove]');if(!b)return;const attr=b.dataset.builderPlus!==undefined?'builderPlus':b.dataset.builderMinus!==undefined?'builderMinus':'builderRemove';const [sec,...rest]=b.dataset[attr].split('|');const name=rest.join('|');const d=decks.find(x=>x.id===document.getElementById('builderDeck').value);if(!d)return;const arr=d.sections[sec]||[];const c=arr.find(x=>x.name===name);if(!c)return;if(attr==='builderPlus')c.qty=Math.min(99,c.qty+1);else if(attr==='builderMinus'){c.qty--;if(c.qty<=0)d.sections[sec]=arr.filter(x=>x!==c)}else d.sections[sec]=arr.filter(x=>x!==c);persist();renderBuilder();});
+
+function renderAll(){renderDashboard();renderLibrary();renderCompareSelects();renderCardsTable();renderTargetDecks();renderBuilderDecks()}
+function previewImport(){const parsed=parseList(document.getElementById('deckText').value),el=document.getElementById('importPreview'),keys=Object.keys(parsed),totalCards=keys.reduce((n,k)=>n+total(parsed[k]),0);if(!totalCards){el.className='empty';el.innerHTML='Cole uma lista à esquerda para visualizar a leitura das cartas.';return}el.className='';el.innerHTML=`<div class="stats" style="grid-template-columns:repeat(3,1fr)"><div class="stat"><div class="label">Main</div><div class="value">${total(parsed['Main Deck'])}</div></div><div class="stat"><div class="label">Extra</div><div class="value">${total(parsed['Extra Deck'])}</div></div><div class="stat"><div class="label">Side</div><div class="value">${total(parsed['Side Deck'])}</div></div></div>`+keys.map(s=>`<div style="margin:15px 0"><div class="panel-head"><h3>${s} (${total(parsed[s])})</h3></div>${parsed[s].length?parsed[s].map(c=>`<div class="card-row"><span>${esc(c.name)}</span><strong>× ${c.qty}</strong></div>`).join(''):'<p class="muted small">Nenhuma carta identificada.</p>'}</div>`).join('')}
+document.getElementById('deckText').addEventListener('input',previewImport);
+document.getElementById('saveDeckBtn').onclick=()=>{const name=document.getElementById('deckName').value.trim(),text=document.getElementById('deckText').value,sections=parseList(text),n=Object.values(sections).reduce((s,c)=>s+total(c),0);if(!name){toast('Informe um nome para o deck.');document.getElementById('deckName').focus();return}if(!n){toast('Cole pelo menos uma carta válida.');return}decks.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),name,archetype:document.getElementById('archetype').value.trim(),format:document.getElementById('format').value.trim(),notes:document.getElementById('deckNotes').value.trim(),sections,createdAt:Date.now()});persist();document.getElementById('deckName').value='';document.getElementById('archetype').value='';document.getElementById('format').value='';document.getElementById('deckText').value='';document.getElementById('deckNotes').value='';previewImport();toast('Deck salvo na biblioteca!');go('library')};
+document.getElementById('searchDecks').addEventListener('input',renderLibrary);document.getElementById('sortDecks').addEventListener('change',renderLibrary);document.getElementById('searchCards').addEventListener('input',renderCardsTable);document.getElementById('filterSection').addEventListener('change',renderCardsTable);document.getElementById('compareBtn').onclick=compareDecks;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const d=decks.find(x=>x.id===b.dataset.id);if(!d)return;if(b.dataset.action==='delete'){if(confirm(`Excluir o deck "${d.name}"?`)){decks=decks.filter(x=>x.id!==d.id);persist();toast('Deck excluído.')}}else if(b.dataset.action==='compare'){go('compare');document.getElementById('compareA').value=d.id;const other=decks.find(x=>x.id!==d.id);if(other)document.getElementById('compareB').value=other.id;compareDecks()}else if(b.dataset.action==='inspect'){alert(`${d.name}\nArquétipo: ${d.archetype||'Não informado'}\nFormato: ${d.format||'Master Duel'}\n\n${Object.entries(d.sections).map(([s,c])=>`${s} (${total(c)}):\n${c.map(x=>`${x.qty} ${x.name}`).join('\n')}`).join('\n\n')}\n\nNotas: ${d.notes||'Nenhuma'}`)}});
+function exportBackup(){const blob=new Blob([JSON.stringify({app:'DuelLab',version:1,exportedAt:new Date().toISOString(),decks},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='duellab-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);toast('Backup exportado.')}
+document.getElementById('exportBtn').onclick=exportBackup;document.getElementById('exportBtn2').onclick=exportBackup;
+document.getElementById('restoreBtn').onclick=()=>{const file=document.getElementById('backupFile').files[0];if(!file){toast('Selecione um arquivo JSON.');return}const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result),incoming=Array.isArray(data)?data:data.decks;if(!Array.isArray(incoming))throw new Error('Formato inválido');let added=0;incoming.forEach(d=>{if(d&&d.name&&d.sections&&!decks.some(x=>x.id===d.id)){decks.push({...d,id:d.id||String(Date.now())+Math.random(),createdAt:d.createdAt||Date.now()});added++}});persist();toast(`${added} deck(s) restaurado(s).`)}catch(e){toast('Não foi possível ler esse backup.')}};r.readAsText(file)};
+document.getElementById('clearBtn').onclick=()=>{if(confirm('Tem certeza? Todos os decks salvos neste navegador serão apagados. Exporte um backup antes se quiser guardá-los.')){decks=[];persist();toast('Biblioteca apagada.')}};
+renderAll();renderBuilder();
+</script>
+</body>
+</html>
