@@ -91,7 +91,7 @@ Side Deck:
       <section class="view" id="view-catalog">
         <div class="heading"><div><div class="eyebrow">Base de cartas</div><h2>Catálogo TCG / OCG</h2><p>Pesquise cartas, consulte status de banlist e adicione cópias aos seus decks.</p></div><button class="primary" id="loadCatalogBtn">Carregar catálogo</button></div>
         <div class="panel">
-          <div class="toolbar"><input id="catalogSearch" placeholder="Buscar por nome da carta…"><select id="catalogFormat"><option value="tcg">TCG</option><option value="ocg">OCG</option><option value="master">Master Duel</option><option value="all">Todas as cartas (base geral)</option></select><select id="catalogBan"><option value="all">Todos os status</option><option value="Forbidden">Proibidas</option><option value="Limited">Limitadas</option><option value="Semi-Limited">Semi-limitadas</option><option value="Unlimited">Sem restrição na lista</option></select></div>
+          <div class="toolbar"><input id="catalogSearch" placeholder="Buscar carta em português ou inglês…"><select id="catalogFormat"><option value="tcg">TCG</option><option value="ocg">OCG</option><option value="master">Master Duel</option><option value="all">Todas as cartas (base geral)</option></select><select id="catalogBan"><option value="all">Todos os status</option><option value="Forbidden">Proibidas</option><option value="Limited">Limitadas</option><option value="Semi-Limited">Semi-limitadas</option><option value="Unlimited">Sem restrição na lista</option></select></div>
           <div class="form-grid">
             <div class="field"><label for="targetDeck">Adicionar ao deck</label><select id="targetDeck"></select></div>
             <div class="field"><label for="targetSection">Seção</label><select id="targetSection"><option value="auto">Automático (Main/Extra)</option><option>Main Deck</option><option>Extra Deck</option><option>Side Deck</option></select></div>
@@ -208,11 +208,15 @@ function cardBanStatus(card,format){
  if(v==='semi-limited'||v==='semi limited')return 'Semi-Limited';
  return 'Unlimited';
 }
+function catalogCardMatches(c,q){
+ if(!q)return true;
+ return [c.name,c.ptName].some(n=>String(n||'').toLocaleLowerCase('pt-BR').includes(q));
+}
 function renderCatalog(){
- const q=(document.getElementById('catalogSearch').value||'').trim().toLowerCase();
+ const q=(document.getElementById('catalogSearch').value||'').trim().toLocaleLowerCase('pt-BR');
  const format=document.getElementById('catalogFormat').value;
  const ban=document.getElementById('catalogBan').value;
- let list=catalogCards.filter(c=>String(c.name||'').toLowerCase().includes(q));
+ let list=catalogCards.filter(c=>catalogCardMatches(c,q));
  if(ban!=='all')list=list.filter(c=>cardBanStatus(c,format)===ban);
  list=list.slice(0,120);
  const el=document.getElementById('catalogResults');
@@ -222,10 +226,12 @@ function renderCatalog(){
   const img=c.card_images?.[0]?.image_url_small||c.card_images?.[0]?.image_url||'';
   const type=c.type||'Carta';
   const stats=c.type?.toLowerCase().includes('monster')?`ATK ${c.atk??'—'} / DEF ${c.def??'—'}`:type;
-  return `<article class="catalog-card"><img loading="lazy" src="${esc(img)}" alt="${esc(c.name)}" onerror="this.style.display='none'"><div class="deck-info"><h4>${esc(c.name)}</h4><p>${esc(stats)}</p><div class="deck-meta"><span class="pill">${esc(type)}</span><span class="pill ${statusClass}">${esc(status==='Semi-Limited'?'Semi-limitada':status==='Limited'?'Limitada':status==='Forbidden'?'Proibida':status==='Unknown'?'Status não confirmado':'Sem restrição na lista')}</span></div><div class="deck-actions"><button class="primary" data-add-card="${esc(c.id)}">＋ Adicionar</button></div></div></article>`;
- }).join(''):'<div class="empty" style="grid-column:1/-1">Nenhuma carta corresponde aos filtros.</div>';
- const totalFound=catalogCards.filter(c=>String(c.name||'').toLowerCase().includes(q)).filter(c=>ban==='all'||cardBanStatus(c,format)===ban).length;
- document.getElementById('catalogStatus').textContent=`${catalogCards.length.toLocaleString('pt-BR')} cartas carregadas · mostrando até 120 de ${totalFound.toLocaleString('pt-BR')} resultados. Clique em Adicionar para incluir a carta na seção escolhida.`;
+  const displayName=c.ptName||c.name;
+  const originalName=c.ptName&&c.ptName.toLocaleLowerCase('pt-BR')!==String(c.name||'').toLocaleLowerCase('pt-BR')?`<p class="help" style="margin:2px 0 8px">Nome original: ${esc(c.name)}</p>`:'';
+  return `<article class="catalog-card"><img loading="lazy" src="${esc(img)}" alt="${esc(displayName)}" onerror="this.style.display='none'"><div class="deck-info"><h4>${esc(displayName)}</h4>${originalName}<p>${esc(stats)}</p><div class="deck-meta"><span class="pill">${esc(type)}</span><span class="pill ${statusClass}">${esc(status==='Semi-Limited'?'Semi-limitada':status==='Limited'?'Limitada':status==='Forbidden'?'Proibida':status==='Unknown'?'Status não confirmado':'Sem restrição na lista')}</span></div><div class="deck-actions"><button class="primary" data-add-card="${esc(c.id)}">＋ Adicionar</button></div></div></article>`;
+ }).join(''):'<div class="empty" style="grid-column:1/-1">Nenhuma carta corresponde aos filtros. Tente pesquisar pelo nome em inglês ou português.</div>';
+ const totalFound=catalogCards.filter(c=>catalogCardMatches(c,q)).filter(c=>ban==='all'||cardBanStatus(c,format)===ban).length;
+ document.getElementById('catalogStatus').textContent=`${catalogCards.length.toLocaleString('pt-BR')} cartas carregadas · mostrando até 120 de ${totalFound.toLocaleString('pt-BR')} resultados. Busca em português e inglês; traduções podem não estar disponíveis para todas as cartas.`;
 }
 async function loadCatalog(){
  if(catalogLoading)return;
@@ -235,12 +241,25 @@ async function loadCatalog(){
  const btn=document.getElementById('loadCatalogBtn');btn.disabled=true;btn.textContent='Carregando…';
  document.getElementById('catalogStatus').textContent='Consultando a base de cartas… isso pode levar alguns segundos.';
  try{
-  const apiFormat=format==='master'?'Master%20Duel':format;const url=format==='all'?'https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes':`https://db.ygoprodeck.com/api/v7/cardinfo.php?format=${apiFormat}&misc=yes`;
-  const response=await fetch(url);
+  const apiFormat=format==='master'?'Master%20Duel':format;
+  const baseUrl=format==='all'?'https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes':`https://db.ygoprodeck.com/api/v7/cardinfo.php?format=${apiFormat}&misc=yes`;
+  const portugueseUrl=baseUrl+(baseUrl.includes('?')?'&':'?')+'language=pt';
+  const response=await fetch(baseUrl);
   if(!response.ok)throw new Error('API indisponível (HTTP '+response.status+')');
   const data=await response.json();
   if(!Array.isArray(data.data))throw new Error(data.error||'Resposta da API inválida');
-  catalogCards=data.data;catalogLoadedFormat=format;masterBanLoaded=false;renderCatalog();if(format==='master'){await loadMasterBanlist();}
+  catalogCards=data.data;
+  try{
+   const ptResponse=await fetch(portugueseUrl);
+   if(ptResponse.ok){
+    const ptData=await ptResponse.json();
+    if(Array.isArray(ptData.data)){
+     const ptNames=new Map(ptData.data.map(c=>[String(c.id),c.name]));
+     catalogCards=catalogCards.map(c=>({...c,ptName:ptNames.get(String(c.id))||''}));
+    }
+   }
+  }catch(translationError){console.warn('Traduções PT-BR indisponíveis; usando nomes originais.',translationError)}
+  catalogLoadedFormat=format;masterBanLoaded=false;renderCatalog();if(format==='master'){await loadMasterBanlist();}
  }catch(err){
   document.getElementById('catalogStatus').textContent='Não foi possível carregar o catálogo: '+err.message+'. Verifique sua conexão e tente novamente.';
   document.getElementById('catalogResults').innerHTML='<div class="empty" style="grid-column:1/-1">Falha ao carregar as cartas. O catálogo depende de uma API externa e de conexão com a internet.</div>';
